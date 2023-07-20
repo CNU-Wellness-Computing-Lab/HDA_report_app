@@ -1,0 +1,27 @@
+# ninja log v5
+10	773	0	src/tools/sqlite_helper.o	f95f7bee7ecf7e95
+0	787	0	src/hda_report.o	b935f19366a494ba
+787	1232	0	hda_report	60c6dfea8c34c5e0
+2	430	0	src/hda_report.o	b935f19366a494ba
+430	637	0	hda_report	60c6dfea8c34c5e0
+2	455	0	src/hda_report.o	b935f19366a494ba
+455	663	0	hda_report	60c6dfea8c34c5e0
+3	449	0	src/hda_report.o	b935f19366a494ba
+449	660	0	hda_report	60c6dfea8c34c5e0
+3	449	0	src/hda_report.o	b935f19366a494ba
+449	646	0	hda_report	60c6dfea8c34c5e0
+3	450	0	src/hda_report.o	b935f19366a494ba
+451	667	0	hda_report	60c6dfea8c34c5e0
+2	451	0	src/hda_report.o	b935f19366a494ba
+452	659	0	hda_report	60c6dfea8c34c5e0
+2	457	0	src/hda_report.o	b935f19366a494ba
+458	658	0	hda_report	60c6dfea8c34c5e0
+2	457	0	src/tools/sqlite_helper.o	f95f7bee7ecf7e95
+7	468	0	src/hda_report.o	b935f19366a494ba
+468	671	0	hda_report	60c6dfea8c34c5e0
+3	448	0	src/hda_report.o	b935f19366a494ba
+449	646	0	hda_report	60c6dfea8c34c5e0
+3	445	0	src/hda_report.o	b935f19366a494ba
+445	642	0	hda_report	60c6dfea8c34c5e0
+2	436	0	src/hda_report.o	b935f19366a494ba
+436	638	0	hda_report	60c6dfea8c34c5e0
