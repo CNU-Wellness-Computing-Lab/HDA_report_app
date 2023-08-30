@@ -1,18 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns="http://tizen.org/ns/packages" api-version="4.0"
-	package="org.example.hda_report" version="1.0.0">
-	<profile name="wearable" />
-	<ui-application appid="org.example.hda_report" exec="hda_report"
-		type="capp" multiple="false" taskmanage="true" nodisplay="false">
-		<icon>hda_report.png</icon>
-		<label>hda_report</label>
-	</ui-application>
-	<privileges>
-		<privilege>http://tizen.org/privilege/mediastorage</privilege>
-        <privilege>http://tizen.org/privilege/healthinfo</privilege>
-        <privilege>http://tizen.org/privilege/bluetooth</privilege>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="4.0" package="org.example.hda_report" version="1.0.0">
+    <profile name="wearable"/>
+    <ui-application appid="org.example.hda_report" exec="hda_report" multiple="false" nodisplay="false" taskmanage="true" type="capp">
+        <label>hda_report</label>
+        <icon>hda_report.png</icon>
+    </ui-application>
+    <privileges>
+        <privilege>http://tizen.org/privilege/mediastorage</privilege>
         <privilege>http://tizen.org/privilege/haptic</privilege>
         <privilege>http://tizen.org/privilege/display</privilege>
         <privilege>http://tizen.org/privilege/content.write</privilege>
-	</privileges>
+    </privileges>
 </manifest>

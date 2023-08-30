@@ -72,7 +72,7 @@ static Ecore_Thread *report_thread;
 static double report_animation_speed = 0.3;
 static double report_animation_showing_time = 2;
 static void* report_draw(void *data);
-static int report_color[] = {0, 0, 0, 255};
+static int report_color[] = { 0, 0, 0, 255 };
 
 // 1 is pressed, 0 is detached;
 static int level_0_state = 0;
@@ -97,6 +97,12 @@ static int hover_color_level_0[] = { 210, 210, 210, 255 };
 static int hover_color_level_1[] = { 50, 118, 21, 255 };
 static int hover_color_level_2[] = { 0, 50, 144, 255 };
 static int hover_color_level_3[] = { 187, 0, 0, 255 };
+
+const char *mediastorage_privilege = "http://tizen.org/privilege/mediastorage";
+bool check_and_request_storage_permission();
+bool request_storage_permission();
+void request_storage_permission_response_callback(ppm_call_cause_e cause,
+		ppm_request_result_e result, const char *privilege, void *user_data);
 
 static void win_delete_request_cb(void *data, Evas_Object *obj,
 		void *event_info) {
@@ -284,11 +290,20 @@ static void app_pause(void *data) {
 
 static void app_resume(void *data) {
 	/* Take necessary actions when application becomes visible. */
+	feedback_initialize();
+
+	if (!check_and_request_storage_permission()) {
+		dlog_print(DLOG_ERROR, LOG_TAG,
+				"Failed to check if an application has permission to use the storage privilege.");
+		ui_app_exit();
+	} else
+		dlog_print(DLOG_INFO, LOG_TAG,
+				"Succeeded in checking if an application has permission to use the storage privilege.");
 }
 
 static void app_terminate(void *data) {
 	/* Release all resources. */
-	int retval;
+	feedback_deinitialize();
 }
 
 static void ui_app_lang_changed(app_event_info_h event_info, void *user_data) {
@@ -357,7 +372,6 @@ int main(int argc, char *argv[]) {
 static void clicked_level_0(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info) {
 	appdata_s *ad = user_data;
-	dlog_print(DLOG_ERROR, LOG_TAG, "press");
 
 	ecore_animator_add(click_animation_level_0, ad);
 	level_0_state = 1;
@@ -366,7 +380,6 @@ static void clicked_level_0(void *user_data, Evas* e, Evas_Object *obj,
 static void clicked_up_level_0(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info) {
 	appdata_s *ad = user_data;
-	dlog_print(DLOG_ERROR, LOG_TAG, "up");
 
 	ecore_animator_add(click_up_animation_level_0, ad);
 	level_0_state = 0;
@@ -488,28 +501,34 @@ static Eina_Bool click_up_animation_level_3(void *data) {
 	return ECORE_CALLBACK_RENEW;
 }
 
-
-
-float lerp(double a, double b, double alpha){
-	return a*(1-alpha)+b*alpha;
+float lerp(double a, double b, double alpha) {
+	return a * (1 - alpha) + b * alpha;
 }
 
 Evas_Coord x = 100;
-static void report_animation(void *data, Ecore_Thread *thread){
+static void report_animation(void *data, Ecore_Thread *thread) {
 	appdata_s *ad = data;
 
 	double timer = 0;
-	while (timer <= report_animation_speed*2 + report_animation_showing_time) {
+	while (timer <= report_animation_speed * 2 + report_animation_showing_time) {
 		usleep(10000);
 		if (timer <= report_animation_speed) {
 			x = (Evas_Coord) (100 - 100 * (timer / report_animation_speed));
 			x = (Evas_Coord) lerp(x, 0, timer / report_animation_speed);
 			ecore_main_loop_thread_safe_call_sync(report_draw, ad);
-		}
-		else if (timer <= report_animation_speed + report_animation_showing_time) {}
-		else if (timer <= report_animation_speed * 2 + report_animation_showing_time) {
-			x = (Evas_Coord) (0 - 100 * ((timer - report_animation_speed - report_animation_showing_time) / report_animation_speed));
-			x = (Evas_Coord) lerp(x, -100, -(timer - report_animation_speed - report_animation_showing_time) / report_animation_speed);
+		} else if (timer
+				<= report_animation_speed + report_animation_showing_time) {
+		} else if (timer
+				<= report_animation_speed * 2 + report_animation_showing_time) {
+			x = (Evas_Coord) (0
+					- 100
+							* ((timer - report_animation_speed
+									- report_animation_showing_time)
+									/ report_animation_speed));
+			x = (Evas_Coord) lerp(x, -100,
+					-(timer - report_animation_speed
+							- report_animation_showing_time)
+							/ report_animation_speed);
 			ecore_main_loop_thread_safe_call_sync(report_draw, ad);
 		}
 		timer += 0.01;
@@ -519,9 +538,10 @@ static void report_animation(void *data, Ecore_Thread *thread){
 	ecore_thread_cancel(report_thread);
 }
 
-static void* report_draw(void *data){
+static void* report_draw(void *data) {
 	appdata_s *ad = data;
-	elm_bg_color_set(ad->report_screen_bg, report_color[0],report_color[1], report_color[2]);
+	elm_bg_color_set(ad->report_screen_bg, report_color[0], report_color[1],
+			report_color[2]);
 	elm_grid_pack(ad->screen, ad->report_screen, x, 0, 100, 100);
 
 	return NULL;
@@ -535,13 +555,11 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 			level_0_state = 0;
 			level_0_pressed_time = 0;
 			feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-			dlog_print(DLOG_ERROR, LOG_TAG, "setup");
 			for (int i = 0; i < 4; i++) {
 				report_color[i] = color_level_0[i];
 			}
-			dlog_print(DLOG_ERROR, LOG_TAG, "set color");
-			report_thread = ecore_thread_feedback_run(report_animation, NULL, NULL, NULL, ad, EINA_FALSE);
-			dlog_print(DLOG_ERROR, LOG_TAG, "feedback_run");
+			report_thread = ecore_thread_feedback_run(report_animation, NULL,
+			NULL, NULL, ad, EINA_FALSE);
 
 			struct tm* t;
 			time_t base = time(NULL);
@@ -557,16 +575,16 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 					"Pain report value = (%s, %s)\n",
 					"level0", date_buf);
 			append_file(filepath, msg_data);
-			dlog_print(DLOG_ERROR, LOG_TAG, "appending");
 		}
 		if (level_1_pressed_time >= long_press_parameter) {
 			level_1_state = 0;
 			level_1_pressed_time = 0;
 			feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-			for(int i=0; i<4; i++){
+			for (int i = 0; i < 4; i++) {
 				report_color[i] = color_level_1[i];
 			}
-			report_thread = ecore_thread_feedback_run(report_animation, NULL, NULL, NULL, ad, EINA_FALSE);
+			report_thread = ecore_thread_feedback_run(report_animation, NULL,
+			NULL, NULL, ad, EINA_FALSE);
 
 			struct tm* t;
 			time_t base = time(NULL);
@@ -578,8 +596,8 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 
 			char * filepath = get_write_filepath("hda_sensor_data.txt");
 			char msg_data[512];
-			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n",
-					"level1", date_buf);
+			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level1",
+					date_buf);
 			append_file(filepath, msg_data);
 		}
 		if (level_2_pressed_time >= long_press_parameter) {
@@ -589,7 +607,8 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 			for (int i = 0; i < 4; i++) {
 				report_color[i] = color_level_2[i];
 			}
-			report_thread = ecore_thread_feedback_run(report_animation, NULL, NULL, NULL, ad, EINA_FALSE);
+			report_thread = ecore_thread_feedback_run(report_animation, NULL,
+			NULL, NULL, ad, EINA_FALSE);
 
 			struct tm* t;
 			time_t base = time(NULL);
@@ -601,8 +620,8 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 
 			char * filepath = get_write_filepath("hda_sensor_data.txt");
 			char msg_data[512];
-			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n",
-					"level2", date_buf);
+			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level2",
+					date_buf);
 			append_file(filepath, msg_data);
 		}
 		if (level_3_pressed_time >= long_press_parameter) {
@@ -612,7 +631,8 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 			for (int i = 0; i < 4; i++) {
 				report_color[i] = color_level_3[i];
 			}
-			report_thread = ecore_thread_feedback_run(report_animation, NULL, NULL, NULL, ad, EINA_FALSE);
+			report_thread = ecore_thread_feedback_run(report_animation, NULL,
+			NULL, NULL, ad, EINA_FALSE);
 
 			struct tm* t;
 			time_t base = time(NULL);
@@ -624,15 +644,14 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 
 			char * filepath = get_write_filepath("hda_sensor_data.txt");
 			char msg_data[512];
-			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n",
-					"level3", date_buf);
+			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level3",
+					date_buf);
 			append_file(filepath, msg_data);
 		}
 
 		sleep(1);
 		if (level_0_state == 1) {
 			level_0_pressed_time += 1;
-			dlog_print(DLOG_ERROR, LOG_TAG, "is clicked");
 		}
 		if (level_1_state == 1) {
 			level_1_pressed_time += 1;
@@ -645,3 +664,107 @@ static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
 		}
 	}
 }
+
+bool check_and_request_storage_permission() {
+	bool result = true;
+
+	int mediastorage_retval;
+	ppm_check_result_e mediastorage_result;
+
+	mediastorage_retval = ppm_check_permission(mediastorage_privilege,
+			&mediastorage_result);
+
+	if (mediastorage_retval == PRIVACY_PRIVILEGE_MANAGER_ERROR_NONE) {
+		if (mediastorage_result
+				== PRIVACY_PRIVILEGE_MANAGER_CHECK_RESULT_ALLOW) {
+			dlog_print(DLOG_INFO, LOG_TAG,
+					"The application has permission to use a storage privilege.");
+		} else if (mediastorage_result
+				== PRIVACY_PRIVILEGE_MANAGER_CHECK_RESULT_ASK) {
+			dlog_print(DLOG_INFO, LOG_TAG,
+					"The user has to be asked whether to grant permission to use a mediastorage privilege.");
+
+			if (!request_storage_permission()) {
+				dlog_print(DLOG_ERROR, LOG_TAG,
+						"Failed to request a user's response to obtain permission for using the mediastorage privilege.");
+				result = true;
+			} else {
+				dlog_print(DLOG_INFO, LOG_TAG,
+						"Succeeded in requesting a user's response to obtain permission for using the mediastorage privilege.");
+				result = true;
+			}
+		} else {
+			dlog_print(DLOG_INFO, LOG_TAG,
+					"Function ppm_check_permission() output result = PRIVACY_PRIVILEGE_MANAGER_CHECK_RESULT_DENY");
+			dlog_print(DLOG_ERROR, LOG_TAG,
+					"The application doesn't have permission to use a mediastorage privilege.");
+			result = true;
+		}
+	} else {
+		/* retval != PRIVACY_PRIVILEGE_MANAGER_ERROR_NONE */
+		/* Handle errors */
+		dlog_print(DLOG_ERROR, LOG_TAG,
+				"Function ppm_check_permission() return %s",
+				get_error_message(mediastorage_retval));
+		result = false;
+	}
+
+	return result;
+}
+
+bool request_storage_permission() {
+	int mediastorage_retval;
+	mediastorage_retval = ppm_request_permission(mediastorage_privilege,
+			request_storage_permission_response_callback, NULL);
+
+	if (mediastorage_retval == PRIVACY_PRIVILEGE_MANAGER_ERROR_NONE) {
+		return true;
+	} else if (mediastorage_retval
+			== PRIVACY_PRIVILEGE_MANAGER_ERROR_ALREADY_IN_PROGRESS) {
+		return true;
+	} else {
+		dlog_print(DLOG_INFO, LOG_TAG,
+				"Function ppm_request_permission() return value = %s",
+				get_error_message(mediastorage_retval));
+		return false;
+	}
+}
+
+void request_storage_permission_response_callback(ppm_call_cause_e cause,
+		ppm_request_result_e result, const char *privilege, void *user_data) {
+	if (cause == PRIVACY_PRIVILEGE_MANAGER_CALL_CAUSE_ERROR) {
+		/* Log and handle errors */
+		dlog_print(DLOG_INFO, LOG_TAG,
+				"Function permission_response_callback() output cause = PRIVACY_PRIVILEGE_MANAGER_CALL_CAUSE_ERROR");
+		dlog_print(DLOG_ERROR, LOG_TAG,
+				"Function permission_response_callback() was called because of an error.");
+	} else {
+		dlog_print(DLOG_INFO, LOG_TAG,
+				"Function permission_response_callback() was called with a valid answer.");
+
+		switch (result) {
+		case PRIVACY_PRIVILEGE_MANAGER_REQUEST_RESULT_ALLOW_FOREVER:
+			/* Update UI and start accessing protected functionality */
+			dlog_print(DLOG_INFO, LOG_TAG,
+					"The user granted permission to use a storage privilege for an indefinite period of time.");
+			break;
+		case PRIVACY_PRIVILEGE_MANAGER_REQUEST_RESULT_DENY_FOREVER:
+			/* Show a message and terminate the application */
+			dlog_print(DLOG_INFO, LOG_TAG,
+					"Function request_storage_permission_response_callback() output result = PRIVACY_PRIVILEGE_MANAGER_REQUEST_RESULT_DENY_FOREVER");
+			dlog_print(DLOG_ERROR, LOG_TAG,
+					"The user denied granting permission to use a storage privilege for an indefinite period of time.");
+			ui_app_exit();
+			break;
+		case PRIVACY_PRIVILEGE_MANAGER_REQUEST_RESULT_DENY_ONCE:
+			/* Show a message with explanation */
+			dlog_print(DLOG_INFO, LOG_TAG,
+					"Function permission_response_callback() output result = PRIVACY_PRIVILEGE_MANAGER_REQUEST_RESULT_DENY_ONCE");
+			dlog_print(DLOG_ERROR, LOG_TAG,
+					"The user denied granting permission to use a storage privilege once.");
+			ui_app_exit();
+			break;
+		}
+	}
+}
+
