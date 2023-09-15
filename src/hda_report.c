@@ -80,14 +80,6 @@ static int level_1_state = 0;
 static int level_2_state = 0;
 static int level_3_state = 0;
 
-static int long_press_parameter = 2;
-static int level_0_pressed_time = 0;
-static int level_1_pressed_time = 0;
-static int level_2_pressed_time = 0;
-static int level_3_pressed_time = 0;
-
-static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread);
-
 static int color_level_0[] = { 244, 244, 244, 255 };
 static int color_level_1[] = { 112, 173, 70, 255 };
 static int color_level_2[] = { 0, 113, 192, 255 };
@@ -261,9 +253,6 @@ static void create_base_gui(appdata_s *ad) {
 	evas_object_show(ad->report_screen_text);
 
 	evas_object_show(ad->win);
-
-	ecore_thread_feedback_run(_encore_thread_check_long_press, NULL, NULL, NULL,
-			ad, EINA_FALSE);
 }
 
 static bool app_create(void *data) {
@@ -383,7 +372,26 @@ static void clicked_up_level_0(void *user_data, Evas* e, Evas_Object *obj,
 
 	ecore_animator_add(click_up_animation_level_0, ad);
 	level_0_state = 0;
-	level_0_pressed_time = 0;
+
+	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+	for (int i = 0; i < 4; i++) {
+		report_color[i] = color_level_0[i];
+	}
+	report_thread = ecore_thread_feedback_run(report_animation, NULL,
+	NULL, NULL, ad, EINA_FALSE);
+
+	struct tm* t;
+	time_t base = time(NULL);
+	t = localtime(&base);
+	char date_buf[64];
+	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+	char * filepath = get_write_filepath("hda_sensor_data.txt");
+	char msg_data[512];
+	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level0",
+			date_buf);
+	append_file(filepath, msg_data);
 }
 
 static void clicked_level_1(void *user_data, Evas* e, Evas_Object *obj,
@@ -400,7 +408,26 @@ static void clicked_up_level_1(void *user_data, Evas* e, Evas_Object *obj,
 
 	ecore_animator_add(click_up_animation_level_1, ad);
 	level_1_state = 0;
-	level_1_pressed_time = 0;
+
+	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+	for (int i = 0; i < 4; i++) {
+		report_color[i] = color_level_1[i];
+	}
+	report_thread = ecore_thread_feedback_run(report_animation, NULL,
+	NULL, NULL, ad, EINA_FALSE);
+
+	struct tm* t;
+	time_t base = time(NULL);
+	t = localtime(&base);
+	char date_buf[64];
+	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+	char * filepath = get_write_filepath("hda_sensor_data.txt");
+	char msg_data[512];
+	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level1",
+			date_buf);
+	append_file(filepath, msg_data);
 }
 
 static void clicked_level_2(void *user_data, Evas* e, Evas_Object *obj,
@@ -417,7 +444,26 @@ static void clicked_up_level_2(void *user_data, Evas* e, Evas_Object *obj,
 
 	ecore_animator_add(click_up_animation_level_2, ad);
 	level_2_state = 0;
-	level_2_pressed_time = 0;
+
+	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+	for (int i = 0; i < 4; i++) {
+		report_color[i] = color_level_2[i];
+	}
+	report_thread = ecore_thread_feedback_run(report_animation, NULL,
+	NULL, NULL, ad, EINA_FALSE);
+
+	struct tm* t;
+	time_t base = time(NULL);
+	t = localtime(&base);
+	char date_buf[64];
+	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+	char * filepath = get_write_filepath("hda_sensor_data.txt");
+	char msg_data[512];
+	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level2",
+			date_buf);
+	append_file(filepath, msg_data);
 }
 
 static void clicked_level_3(void *user_data, Evas* e, Evas_Object *obj,
@@ -434,7 +480,26 @@ static void clicked_up_level_3(void *user_data, Evas* e, Evas_Object *obj,
 
 	ecore_animator_add(click_up_animation_level_3, ad);
 	level_3_state = 0;
-	level_3_pressed_time = 0;
+
+	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+	for (int i = 0; i < 4; i++) {
+		report_color[i] = color_level_3[i];
+	}
+	report_thread = ecore_thread_feedback_run(report_animation, NULL,
+	NULL, NULL, ad, EINA_FALSE);
+
+	struct tm* t;
+	time_t base = time(NULL);
+	t = localtime(&base);
+	char date_buf[64];
+	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+	char * filepath = get_write_filepath("hda_sensor_data.txt");
+	char msg_data[512];
+	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level3",
+			date_buf);
+	append_file(filepath, msg_data);
 }
 
 static Eina_Bool click_animation_level_0(void *data) {
@@ -545,124 +610,6 @@ static void* report_draw(void *data) {
 	elm_grid_pack(ad->screen, ad->report_screen, x, 0, 100, 100);
 
 	return NULL;
-}
-
-static void _encore_thread_check_long_press(void *data, Ecore_Thread *thread) {
-	appdata_s *ad = data;
-
-	while (1) {
-		if (level_0_pressed_time >= long_press_parameter) {
-			level_0_state = 0;
-			level_0_pressed_time = 0;
-			feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-			for (int i = 0; i < 4; i++) {
-				report_color[i] = color_level_0[i];
-			}
-			report_thread = ecore_thread_feedback_run(report_animation, NULL,
-			NULL, NULL, ad, EINA_FALSE);
-
-			struct tm* t;
-			time_t base = time(NULL);
-			t = localtime(&base);
-			char date_buf[64];
-			snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-					t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
-					t->tm_sec);
-
-			char * filepath = get_write_filepath("hda_sensor_data.txt");
-			char msg_data[512];
-			snprintf(msg_data, 512,
-					"Pain report value = (%s, %s)\n",
-					"level0", date_buf);
-			append_file(filepath, msg_data);
-		}
-		if (level_1_pressed_time >= long_press_parameter) {
-			level_1_state = 0;
-			level_1_pressed_time = 0;
-			feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-			for (int i = 0; i < 4; i++) {
-				report_color[i] = color_level_1[i];
-			}
-			report_thread = ecore_thread_feedback_run(report_animation, NULL,
-			NULL, NULL, ad, EINA_FALSE);
-
-			struct tm* t;
-			time_t base = time(NULL);
-			t = localtime(&base);
-			char date_buf[64];
-			snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-					t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
-					t->tm_sec);
-
-			char * filepath = get_write_filepath("hda_sensor_data.txt");
-			char msg_data[512];
-			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level1",
-					date_buf);
-			append_file(filepath, msg_data);
-		}
-		if (level_2_pressed_time >= long_press_parameter) {
-			level_2_state = 0;
-			level_2_pressed_time = 0;
-			feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-			for (int i = 0; i < 4; i++) {
-				report_color[i] = color_level_2[i];
-			}
-			report_thread = ecore_thread_feedback_run(report_animation, NULL,
-			NULL, NULL, ad, EINA_FALSE);
-
-			struct tm* t;
-			time_t base = time(NULL);
-			t = localtime(&base);
-			char date_buf[64];
-			snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-					t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
-					t->tm_sec);
-
-			char * filepath = get_write_filepath("hda_sensor_data.txt");
-			char msg_data[512];
-			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level2",
-					date_buf);
-			append_file(filepath, msg_data);
-		}
-		if (level_3_pressed_time >= long_press_parameter) {
-			level_3_state = 0;
-			level_3_pressed_time = 0;
-			feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-			for (int i = 0; i < 4; i++) {
-				report_color[i] = color_level_3[i];
-			}
-			report_thread = ecore_thread_feedback_run(report_animation, NULL,
-			NULL, NULL, ad, EINA_FALSE);
-
-			struct tm* t;
-			time_t base = time(NULL);
-			t = localtime(&base);
-			char date_buf[64];
-			snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-					t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
-					t->tm_sec);
-
-			char * filepath = get_write_filepath("hda_sensor_data.txt");
-			char msg_data[512];
-			snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level3",
-					date_buf);
-			append_file(filepath, msg_data);
-		}
-
-		sleep(1);
-		if (level_0_state == 1) {
-			level_0_pressed_time += 1;
-		}
-		if (level_1_state == 1) {
-			level_1_pressed_time += 1;
-		}
-		if (level_2_state == 1) {
-			level_2_pressed_time += 1;
-		}
-		if (level_3_state == 1) {
-			level_3_pressed_time += 1;
-		}
-	}
 }
 
 bool check_and_request_storage_permission() {
