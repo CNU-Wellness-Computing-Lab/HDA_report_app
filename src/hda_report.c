@@ -55,7 +55,7 @@ static void clicked_up_level_2(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info);
 static void clicked_up_level_3(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info);
-
+// about animation
 static Eina_Bool click_animation_level_0(void *data);
 static Eina_Bool click_animation_level_1(void *data);
 static Eina_Bool click_animation_level_2(void *data);
