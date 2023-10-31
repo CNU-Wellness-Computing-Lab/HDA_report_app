@@ -90,6 +90,8 @@ static int hover_color_level_1[] = { 50, 118, 21, 255 };
 static int hover_color_level_2[] = { 0, 50, 144, 255 };
 static int hover_color_level_3[] = { 187, 0, 0, 255 };
 
+static bool clickable_status = true;
+
 const char *mediastorage_privilege = "http://tizen.org/privilege/mediastorage";
 bool check_and_request_storage_permission();
 bool request_storage_permission();
@@ -369,29 +371,32 @@ static void clicked_level_0(void *user_data, Evas* e, Evas_Object *obj,
 static void clicked_up_level_0(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info) {
 	appdata_s *ad = user_data;
-
 	ecore_animator_add(click_up_animation_level_0, ad);
-	level_0_state = 0;
 
-	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-	for (int i = 0; i < 4; i++) {
-		report_color[i] = color_level_0[i];
+	if (clickable_status) {
+		level_0_state = 0;
+		clickable_status = false;
+
+		feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+		for (int i = 0; i < 4; i++) {
+			report_color[i] = color_level_0[i];
+		}
+		report_thread = ecore_thread_feedback_run(report_animation, NULL,
+		NULL, NULL, ad, EINA_FALSE);
+
+		struct tm* t;
+		time_t base = time(NULL);
+		t = localtime(&base);
+		char date_buf[64];
+		snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+				t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+		char * filepath = get_write_filepath("hda_sensor_data.txt");
+		char msg_data[512];
+		snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level0",
+				date_buf);
+		append_file(filepath, msg_data);
 	}
-	report_thread = ecore_thread_feedback_run(report_animation, NULL,
-	NULL, NULL, ad, EINA_FALSE);
-
-	struct tm* t;
-	time_t base = time(NULL);
-	t = localtime(&base);
-	char date_buf[64];
-	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
-
-	char * filepath = get_write_filepath("hda_sensor_data.txt");
-	char msg_data[512];
-	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level0",
-			date_buf);
-	append_file(filepath, msg_data);
 }
 
 static void clicked_level_1(void *user_data, Evas* e, Evas_Object *obj,
@@ -405,29 +410,32 @@ static void clicked_level_1(void *user_data, Evas* e, Evas_Object *obj,
 static void clicked_up_level_1(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info) {
 	appdata_s *ad = user_data;
-
 	ecore_animator_add(click_up_animation_level_1, ad);
-	level_1_state = 0;
 
-	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-	for (int i = 0; i < 4; i++) {
-		report_color[i] = color_level_1[i];
+	if (clickable_status) {
+		level_1_state = 0;
+		clickable_status = false;
+
+		feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+		for (int i = 0; i < 4; i++) {
+			report_color[i] = color_level_1[i];
+		}
+		report_thread = ecore_thread_feedback_run(report_animation, NULL,
+		NULL, NULL, ad, EINA_FALSE);
+
+		struct tm* t;
+		time_t base = time(NULL);
+		t = localtime(&base);
+		char date_buf[64];
+		snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+				t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+		char * filepath = get_write_filepath("hda_sensor_data.txt");
+		char msg_data[512];
+		snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level1",
+				date_buf);
+		append_file(filepath, msg_data);
 	}
-	report_thread = ecore_thread_feedback_run(report_animation, NULL,
-	NULL, NULL, ad, EINA_FALSE);
-
-	struct tm* t;
-	time_t base = time(NULL);
-	t = localtime(&base);
-	char date_buf[64];
-	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
-
-	char * filepath = get_write_filepath("hda_sensor_data.txt");
-	char msg_data[512];
-	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level1",
-			date_buf);
-	append_file(filepath, msg_data);
 }
 
 static void clicked_level_2(void *user_data, Evas* e, Evas_Object *obj,
@@ -441,29 +449,32 @@ static void clicked_level_2(void *user_data, Evas* e, Evas_Object *obj,
 static void clicked_up_level_2(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info) {
 	appdata_s *ad = user_data;
-
 	ecore_animator_add(click_up_animation_level_2, ad);
-	level_2_state = 0;
 
-	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-	for (int i = 0; i < 4; i++) {
-		report_color[i] = color_level_2[i];
+	if (clickable_status) {
+		level_2_state = 0;
+		clickable_status = false;
+
+		feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+		for (int i = 0; i < 4; i++) {
+			report_color[i] = color_level_2[i];
+		}
+		report_thread = ecore_thread_feedback_run(report_animation, NULL,
+		NULL, NULL, ad, EINA_FALSE);
+
+		struct tm* t;
+		time_t base = time(NULL);
+		t = localtime(&base);
+		char date_buf[64];
+		snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+				t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+		char * filepath = get_write_filepath("hda_sensor_data.txt");
+		char msg_data[512];
+		snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level2",
+				date_buf);
+		append_file(filepath, msg_data);
 	}
-	report_thread = ecore_thread_feedback_run(report_animation, NULL,
-	NULL, NULL, ad, EINA_FALSE);
-
-	struct tm* t;
-	time_t base = time(NULL);
-	t = localtime(&base);
-	char date_buf[64];
-	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
-
-	char * filepath = get_write_filepath("hda_sensor_data.txt");
-	char msg_data[512];
-	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level2",
-			date_buf);
-	append_file(filepath, msg_data);
 }
 
 static void clicked_level_3(void *user_data, Evas* e, Evas_Object *obj,
@@ -477,29 +488,32 @@ static void clicked_level_3(void *user_data, Evas* e, Evas_Object *obj,
 static void clicked_up_level_3(void *user_data, Evas* e, Evas_Object *obj,
 		void *event_info) {
 	appdata_s *ad = user_data;
-
 	ecore_animator_add(click_up_animation_level_3, ad);
-	level_3_state = 0;
 
-	feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
-	for (int i = 0; i < 4; i++) {
-		report_color[i] = color_level_3[i];
+	if (clickable_status) {
+		level_3_state = 0;
+		clickable_status = false;
+
+		feedback_play(FEEDBACK_PATTERN_VIBRATION_ON);
+		for (int i = 0; i < 4; i++) {
+			report_color[i] = color_level_3[i];
+		}
+		report_thread = ecore_thread_feedback_run(report_animation, NULL,
+		NULL, NULL, ad, EINA_FALSE);
+
+		struct tm* t;
+		time_t base = time(NULL);
+		t = localtime(&base);
+		char date_buf[64];
+		snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
+				t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+		char * filepath = get_write_filepath("hda_sensor_data.txt");
+		char msg_data[512];
+		snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level3",
+				date_buf);
+		append_file(filepath, msg_data);
 	}
-	report_thread = ecore_thread_feedback_run(report_animation, NULL,
-	NULL, NULL, ad, EINA_FALSE);
-
-	struct tm* t;
-	time_t base = time(NULL);
-	t = localtime(&base);
-	char date_buf[64];
-	snprintf(date_buf, 64, "%d-%d-%d %d:%d:%d", t->tm_year + 1900,
-			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
-
-	char * filepath = get_write_filepath("hda_sensor_data.txt");
-	char msg_data[512];
-	snprintf(msg_data, 512, "Pain report value = (%s, %s)\n", "level3",
-			date_buf);
-	append_file(filepath, msg_data);
 }
 
 static Eina_Bool click_animation_level_0(void *data) {
@@ -601,6 +615,7 @@ static void report_animation(void *data, Ecore_Thread *thread) {
 	x = 100;
 	ecore_main_loop_thread_safe_call_sync(report_draw, ad);
 	ecore_thread_cancel(report_thread);
+	ui_app_exit();
 }
 
 static void* report_draw(void *data) {
